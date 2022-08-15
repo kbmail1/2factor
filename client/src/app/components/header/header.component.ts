@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NgModel } from '@angular/forms';
-import { LoginService }      from '../../services/login.service'
-import { Observable, }      from 'rxjs';
+import { LoginService } from '../../services/login.service'
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -10,9 +9,22 @@ import { Observable, }      from 'rxjs';
 })
 export class HeaderComponent implements OnInit {
 
+  loginState: boolean = false
+  loginSubscription: Subscription
+
   constructor(
     public loginService: LoginService
-  ) { }
+  ) {
+    this.loginSubscription = this.loginService.loginStatus$.subscribe((status) => {
+      this.loginState = status
+      console.log('header: status:', status)
+    })
+  }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    this.loginSubscription.unsubscribe()
+  }
 }
