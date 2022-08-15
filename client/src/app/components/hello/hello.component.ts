@@ -19,11 +19,18 @@ export class HelloComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('hello.component: ')
     this._activatedRoute.params
       .subscribe(params => {
         console.log(params); // { order: "popular" }
         console.log(typeof params)
         console.log(params['id']); // "popular"
       })
+
+    console.log('queryParams\n')
+    this._activatedRoute.queryParams
+      .subscribe((params) => {
+        console.log(params)
+      });
   }
 }
