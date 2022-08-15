@@ -22,6 +22,8 @@ export class HelloComponent implements OnInit {
     this._activatedRoute.params
       .subscribe(params => {
         console.log(params); // { order: "popular" }
+        console.log(typeof params)
+        console.log(params['id']); // "popular"
       })
   }
 }
