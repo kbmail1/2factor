@@ -1,0 +1,36 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon ./server.js localhost 4201",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kbmail1/2factor.git"
+  },
+  "keywords": [
+    "node",
+    "server",
+    "2factor-server",
+    "mfa-server"
+  ],
+  "author": "kundan.bmail1@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kbmail1/2factor/issues"
+  },
+  "homepage": "https://github.com/kbmail1/2factor#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}

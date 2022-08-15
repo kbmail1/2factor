@@ -1,0 +1,5 @@
+<ul>
+  <li><a [routerLink]="['/home']">Home</a></li>
+  <li *ngIf="!(loginService.isLoggedIn() | async)" (click)="loginService.login()">Login</li>
+  <li *ngIf="(loginService.isLoggedIn() | async)" (click)="loginService.logout()">Logout</li>
+</ul>
