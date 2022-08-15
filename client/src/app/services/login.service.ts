@@ -4,7 +4,8 @@ import {BehaviorSubject, Observable} from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class LoginService {
 
-  isLoginSubject = new BehaviorSubject<boolean>(false);
+  private _isLoginSubject = new BehaviorSubject<boolean>(false);
+  readonly loginStatus$ = this._isLoginSubject.asObservable();
 
   constructor() { }
 
@@ -12,19 +13,19 @@ export class LoginService {
 
   ngOnDestroy() {
     //Close the Observable stream
-    this.isLoginSubject.unsubscribe();
+    return this._isLoginSubject.unsubscribe()
   }
 
-  isLoggedIn(): Observable<boolean>{
-    return this.isLoginSubject.asObservable();
-  }
   login() {
     // successful login
-    this.isLoginSubject.next(true)
+    console.log('successful login')
+    this._isLoginSubject.next(true)
+
   }
 
   logout() {
-    this.isLoginSubject.next(false)
+    console.log('successful logout')
+    this._isLoginSubject.next(false)
   }
 
 }

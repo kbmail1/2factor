@@ -24,11 +24,12 @@ export class HomeComponent implements OnInit {
   }
 
   handleHello(): void {
-    this.rest.hello().subscribe((data: {}) => {
+    this.rest.hello().subscribe((data) => {
       this.helloResponse = JSON.stringify(data)
-      console.log(`Home.Component: hello response: ${this.helloResponse}`)
+      console.log(`Home.Component: hello: ${this.helloResponse}`)
 
-      this.router.navigate(['/api/hello/3'])
+      // this.router.navigate(['/api/hello/665'], { queryParams: { 'hello-api-response': this.helloResponse } });
+      this.router.navigate(['/api/hello'], { queryParams: { 'hello-api-response': this.helloResponse } });
     })
   }
 

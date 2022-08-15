@@ -1,25 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { LoginService } from '../../services/login.service'
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-hello',
   templateUrl: './hello.component.html',
-  styleUrls: ['./hello.component.scss']
+  styleUrls: ['./hello.component.scss'],
+  providers: []
 })
 export class HelloComponent implements OnInit {
 
   helloResponse: any
   params: any
 
+  loginState: boolean = false
+  loginSubscription: Subscription
+
   constructor(
-    private _activatedRoute: ActivatedRoute
+    private _activatedRoute: ActivatedRoute,
+    public loginService: LoginService,
   ) {
     this.helloResponse = {}
+
+    this.loginSubscription = this.loginService.loginStatus$.subscribe((status) => {
+      this.loginState = status
+      console.log('hello: status:', status)
+    })
   }
 
   ngOnInit(): void {
-    console.log('hello.component: ')
+
     this._activatedRoute.params
       .subscribe(params => {
         console.log(params); // { order: "popular" }
@@ -27,10 +38,14 @@ export class HelloComponent implements OnInit {
         console.log(params['id']); // "popular"
       })
 
-    console.log('queryParams\n')
+    console.log('HelloComponent: queryParams...')
     this._activatedRoute.queryParams
       .subscribe((params) => {
         console.log(params)
       });
+  }
+
+  ngOnDestroy(): void {
+    this.loginSubscription.unsubscribe()
   }
 }
