@@ -1,1 +1,16 @@
-<p>login works!</p>
+<form class="login-form" (ngSubmit)="this.onSubmit()" [formGroup]="loginForm">
+  <label class="login-form__label" for="name">User Id: </label>
+  <input class="login-form__input form-control__gap" id="loginUsesrId" type="text" formControlName="userId">
+
+  <label class="login-form__label" for="name">Password: </label>
+  <input style="font-size: 1rem" class="login-form__input form-control__gap" id="password" type="password"
+    formControlName="password">
+
+  <div class="div-container" style=
+    "border: 1px solid navy">
+    <ul class="left">
+      <li><button type="submit" [disabled]="!loginForm.valid" class="login-form__submit">Submit</button></li>
+      <li><button class="login-form__submit">New user</button></li>
+    </ul>
+  </div>
+</form>

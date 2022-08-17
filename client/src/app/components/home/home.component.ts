@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
 
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { LoginService } from 'src/app/services/login.service';
 
 
 @Component({
@@ -11,12 +13,22 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
+  loginState: boolean = false
+  loginSubscription: Subscription
+
   helloResponse: any
 
   constructor(
-    public rest: RestService,
-    private router: Router
+    public restService: RestService,
+    private router: Router,
+    public loginService: LoginService,
+
   ) {
+
+    this.loginSubscription = this.loginService.loginStatus$.subscribe((state) => {
+      this.loginState = state
+    })
+
     this.helloResponse = {}
   }
 
@@ -24,12 +36,13 @@ export class HomeComponent implements OnInit {
   }
 
   handleHello(): void {
-    this.rest.hello().subscribe((data) => {
+    this.restService.hello().subscribe((data) => {
       this.helloResponse = JSON.stringify(data)
-      console.log(`Home.Component: hello: ${this.helloResponse}`)
+      console.log(`HomeComponent: hello: ${this.helloResponse}`)
 
-      // this.router.navigate(['/api/hello/665'], { queryParams: { 'hello-api-response': this.helloResponse } });
-      this.router.navigate(['/api/hello'], { queryParams: { 'hello-api-response': this.helloResponse } });
+      // * THIS IS IMPORTANT - DO NOT DELETE
+      // this.router.navigate(['/hello/665'], { queryParams: { 'hello-api-response': this.helloResponse } });
+      // this.router.navigate(['/hello'], { queryParams: { 'hello-api-response': this.helloResponse } });
     })
   }
 

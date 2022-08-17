@@ -12,9 +12,15 @@ app.use(cors({
 }))
 app.use(bodyParser.json());
 
-app.get('/api/hello', (req, res) => {
+app.get('/hello', (req, res) => {
   res.status(200).send({ express: 'Hello From Express' })
 });
+
+app.get('/login', (req, res) => {
+  res.status(200).send({'express': { login: 'success'}})
+});
+
+
 
 app.get('/', (req, res) => {
   res.status(200).send('node-express App Works!')

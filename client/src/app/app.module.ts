@@ -10,8 +10,8 @@ import { HelloComponent } from './components/hello/hello.component';
 import { HeaderComponent } from './components/header/header.component';
 import { RestService } from './services/rest.service';
 import { LoginService } from './services/login.service';
-import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -28,6 +28,7 @@ import { LoginComponent } from './components/login/login.component';
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [
     RestService,

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LoginService } from '../../services/login.service'
 import { Subscription } from 'rxjs';
+import { RestService } from 'src/app/services/rest.service';
 
 @Component({
   selector: 'app-hello',
@@ -43,6 +44,7 @@ export class HelloComponent implements OnInit {
       .subscribe((params) => {
         console.log(params)
       });
+
   }
 
   ngOnDestroy(): void {

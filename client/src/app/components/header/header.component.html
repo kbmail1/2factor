@@ -1,6 +1,10 @@
 <ul>
   <li><a [routerLink]="['/home']">Home</a></li>
-  status: {{ this.loginState }}
-  <li *ngIf="!(this.loginService.loginStatus$ | async)" (click)="loginService.login()">Login</li>
+
+  <!--<li *ngIf="!(this.loginService.loginStatus$ | async)" (click)="loginService.login()">Login</li>-->
   <li *ngIf="(this.loginService.loginStatus$ | async)" (click)="loginService.logout()">Logout</li>
+
+  <li (click)="this.handleHello()">Hello</li>
+  <li class="header-app-state" *ngIf="this.helloResponse"> [hello: {{ this.helloResponse }} ]</li>
+  <li class="header-app-state"> [login: {{ this.loginState }} ]</li>
 </ul>

@@ -9,8 +9,8 @@ import { AuthGuard } from './services/auth.guard';
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: '', pathMatch: 'full', redirectTo: 'home' },
-  { path: 'api/hello', component: HelloComponent, canActivate: [AuthGuard] },
-  { path: 'api/hello/:id', component: HelloComponent, canActivate: [AuthGuard]},
+  { path: 'hello', component: HelloComponent, canActivate: [AuthGuard] },
+  { path: 'hello/:id', component: HelloComponent, canActivate: [AuthGuard]},
   { path: '404', component: PagenotfoundComponent},
   { path: '**', redirectTo: '/404'}
 ]
