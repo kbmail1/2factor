@@ -11,6 +11,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { RestService } from './services/rest.service';
 import { LoginService } from './services/login.service';
 import { FormsModule } from '@angular/forms';
+import { LoginComponent } from './components/login/login.component';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { FormsModule } from '@angular/forms';
     HomeComponent,
     HelloComponent,
     HeaderComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
