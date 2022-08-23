@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LoginService } from 'src/app/services/login.service';
-import { RestService } from 'src/app/services/rest.service';
+import { LoginService } from '../../services/login/login.service';
+import { RestClientService } from '../../services/rest-client/rest-client.service';
 
 
 @Component({
@@ -21,16 +21,23 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     public loginService: LoginService,
-    public restService: RestService,
+    public restClientService: RestClientService,
   ) { }
 
   ngOnInit(): void {
   }
 
   onSubmit() {
-    console.log('login.component.ts:onSubmit...')
-    console.log(this.loginForm.value)
+    console.log('login.component:onSubmit...')
+    console.log('login.component: ', this.loginForm.value)
     this.loginService.login(this.loginForm.value.userId, this.loginForm.value.password)
-    console.log('login.component: invoked loginService.login(): If success, loginStatus$ must have changed...')
+  }
+
+  onRegister(event: any) {
+    event.preventDefault()
+    console.log(typeof event)
+    console.log('login.component:onRegister...')
+    console.log('login.component: onRegister', this.loginForm.value)
+    this.loginService.register(this.loginForm.value.userId, this.loginForm.value.password)
   }
 }

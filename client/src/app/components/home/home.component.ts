@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { RestService } from '../../services/rest.service';
+import { RestClientService } from '../../services/rest-client/rest-client.service';
 
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { LoginService } from 'src/app/services/login.service';
+import { LoginService } from 'src/app/services/login/login.service';
 
 
 @Component({
@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   helloResponse: any
 
   constructor(
-    public restService: RestService,
+    public restClientService: RestClientService,
     private router: Router,
     public loginService: LoginService,
 
@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit {
   }
 
   handleHello(): void {
-    this.restService.hello().subscribe((data) => {
+    this.restClientService.hello().subscribe((data) => {
       this.helloResponse = JSON.stringify(data)
       console.log(`HomeComponent: hello: ${this.helloResponse}`)
 

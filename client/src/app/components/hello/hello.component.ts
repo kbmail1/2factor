@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { LoginService } from '../../services/login.service'
+import { LoginService } from '../../services/login/login.service'
 import { Subscription } from 'rxjs';
-import { RestService } from 'src/app/services/rest.service';
+import { RestClientService } from 'src/app/services/rest-client/rest-client.service';
 
 @Component({
   selector: 'app-hello',

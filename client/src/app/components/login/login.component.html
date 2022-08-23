@@ -3,14 +3,16 @@
   <input class="login-form__input form-control__gap" id="loginUsesrId" type="text" formControlName="userId">
 
   <label class="login-form__label" for="name">Password: </label>
-  <input style="font-size: 1rem" class="login-form__input form-control__gap" id="password" type="password"
-    formControlName="password">
+  <input class="login-form__input form-control__gap" id="password" type="password" formControlName="password">
 
-  <div class="div-container" style=
-    "border: 1px solid navy">
+  <div class="div-container" style="border: 1px solid navy">
     <ul class="left">
-      <li><button type="submit" [disabled]="!loginForm.valid" class="login-form__submit">Submit</button></li>
-      <li><button class="login-form__submit">New user</button></li>
+      <li>
+        <button type="submit" [disabled]="!loginForm.valid" class="login-form__submit"> Login</button>
+      </li>
+      <li>
+        <button type="button" class="login-form__submit" (click)="this.onRegister($event)">Register</button>
+      </li>
     </ul>
   </div>
 </form>

@@ -7,4 +7,12 @@
   <li (click)="this.handleHello()">Hello</li>
   <li class="header-app-state" *ngIf="this.helloResponse"> [hello: {{ this.helloResponse }} ]</li>
   <li class="header-app-state"> [login: {{ this.loginState }} ]</li>
+  <li *ngIf="
+      (this.statusMessageService.statusMessage$ | async) !== null
+        &&
+      (this.statusMessageService.statusMessage$ | async) !== ''
+    " class="header-app-state">
+    [{{ this.statusMessage }} ]
+  </li>
+
 </ul>

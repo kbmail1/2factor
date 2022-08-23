@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { LoginService } from '../../services/login.service'
+import { LoginService } from '../../services/login/login.service'
 import { Subscription } from 'rxjs';
-import { RestService } from 'src/app/services/rest.service';
+import { RestClientService } from 'src/app/services/rest-client/rest-client.service';
 import { Router } from '@angular/router';
+import { StatusMessageService } from 'src/app/services/statusMessage/statusMessage.service';
 
 @Component({
   selector: 'app-header',
@@ -13,28 +14,37 @@ export class HeaderComponent implements OnInit {
 
   loginState: boolean = false
   loginSubscription: Subscription
-  helloResponse: String|null = null
+
+  statusMessage: string | null = ''
+  statusMessageSubscription: Subscription
+
+  helloResponse: String | null = null
 
   constructor(
     public loginService: LoginService,
-    public restService: RestService,
+    public restClientService: RestClientService,
+    public statusMessageService: StatusMessageService,
     public router: Router,
   ) {
     this.loginSubscription = this.loginService.loginStatus$.subscribe((status) => {
       this.loginState = status
       console.log('header: status:', status)
     })
+    this.statusMessageSubscription = this.statusMessageService.statusMessage$.subscribe((msg) => {
+      this.statusMessage = msg
+      console.log('header: error:', this.statusMessage)
+    })
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   ngOnDestroy(): void {
     this.loginSubscription.unsubscribe()
+    this.statusMessageSubscription.unsubscribe()
   }
 
   handleHello(): void {
-    this.restService.hello().subscribe((data) => {
+    this.restClientService.hello().subscribe((data) => {
       this.helloResponse = JSON.stringify(data)
       console.log(`HeaderComponent: hello: ${this.helloResponse}`)
 
@@ -42,9 +52,4 @@ export class HeaderComponent implements OnInit {
       // this.router.navigate(['/hello'], { queryParams: { 'hello-api-response': this.helloResponse } });
     })
   }
-
-  handleLogin(): void {
-
-  }
-
 }
