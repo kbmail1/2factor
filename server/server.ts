@@ -1,11 +1,11 @@
 
 // 1 800 300 4296  ext. 5620 Yzonne Welsh
 
-import * as users from './users';
-import * as user_list from './users'
+const users = require('./users')
 import * as utils from './utils'
 import * as jwt from 'jsonwebtoken'
-import { JWT }  from './config'
+import { JWT } from './config'
+import * as db from './db'
 
 const express = require('express')
 const cors = require('cors')
@@ -23,17 +23,17 @@ const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
-      const token = authHeader.split(' ')[1];
+    const token = authHeader.split(' ')[1];
 
-      jwt.verify(token, JWT.TOKEN_SECRET, (err: any, user: any) => {
-          if (err) {
-              return res.sendStatus(403);
-          }
-          req.user = user;
-          next();
-      });
+    jwt.verify(token, JWT.TOKEN_SECRET, (err: any, user: any) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+      req.user = user;
+      next();
+    });
   } else {
-      res.sendStatus(401);
+    res.sendStatus(401);
   }
 };
 
@@ -41,50 +41,66 @@ app.get('/hello', (req, res) => {
   res.status(200).send({ express: 'Hello From Express' })
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   // console.log('login: req.body', req.body);
   const req_userId = req.body.userId.toLowerCase()
   const req_password = req.body.password.toLowerCase()
 
-  if (utils.doesUserExist(req_userId)) {
-    const _user = utils.getUser(req_userId)
-    const userId = _user.userId
-    const password = _user.password
+  if (db.getUser(req_userId) !== null) {
+    // user found.
+    const _user = db.getUser(req_userId)
+    const db_userId = _user.userId
+    const db_password = _user.password
 
-    const token = utils.generateAccessToken(userId)
-    res.cookie("jwt-token", token, { maxAge: utils.jwtExpirySeconds * 1000 })
+    console.log(`login: validating password(${req_userId} ${req_password})`)
+    let valid: boolean = await db.validatePassword(db_userId, req_password)
+    if (!valid) {
+      res.status(200).send({ error: 'auth failed' }).end()
+      return
+    }
+    let token = null
+    try {
+      token = utils.generateAccessToken(db_userId)
+    } catch (error) {
+      res.status(401).send({ error: `${error} generateAccessToken(${db_userId} failed` }).end()
+      return
+    }
     res.status(200).send({
       token,
-      message: 'Lo`gin Successful',
-      userId,
-      password,
+      message: 'Login Successful',
+      db_userId,
+      password: req_password,
+      hash: db_password,
       error: null,
     })
-    return true
+    return
   }
   console.log('login failed')
   res.status(200).send({ error: 'userId/password not found' }).end()
+  return
 });
 
-app.post('/register', (req, res) => {
-  console.log('login: req.body', req.body);
+app.post('/register', async (req, res) => {
+  console.log('register: req.body', req.body);
   const req_userId = req.body.userId.toLowerCase()
   const req_password = req.body.password.toLowerCase()
 
-  if (utils.doesUserExist(req_userId)) {
+  let tmp_user = await db.getUser(req_userId)
+  if (tmp_user !== null) {
     console.log('user ', req_userId, ' already exists')
     res.status(200).send({
       message: 'user already exists',
       userId: req_userId,
       error: 'user exists',
-    })
+    }).end()
+    return
   }
 
   console.log('user-id is unique... registering')
-  // TODO save newly registered user.
+  await db.saveUser(req_userId, req_password)
   res.status(201).send(
     {
-      message: 'new user registered',
+      message: `user ${req_userId} registered`,
       userId: req_userId,
       error: null
     })

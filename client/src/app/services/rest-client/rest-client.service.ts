@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { JwtService } from '../jwt/jwt.service';
+import { SessionStoreService } from '../../shared/session-store.service'
 
 const endpoint = 'http://localhost:4201/'
 
@@ -16,7 +16,7 @@ static REGISTER = 'register'
 
   constructor(
     private http: HttpClient,
-    public jwtService: JwtService
+    public sessionStoreService: SessionStoreService
   ) { }
 
   hello(): Observable<any> {

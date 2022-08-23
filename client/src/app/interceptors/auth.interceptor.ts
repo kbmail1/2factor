@@ -9,7 +9,7 @@ import {
 import { map, pipe, Observable } from 'rxjs';
 import { LoginService } from '../services/login/login.service';
 import { from, lastValueFrom } from 'rxjs';
-import { JwtService } from '../services/jwt/jwt.service';
+import { SessionStoreService } from '../shared/session-store.service'
 import { RestClientService } from '../services/rest-client/rest-client.service';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
     public loginService: LoginService,
-    private jwtService: JwtService,
+    private sessionStoreService: SessionStoreService,
     public restClientService: RestClientService,
   ) {}
 
@@ -28,14 +28,14 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(request).pipe(map(event => {
         if (event instanceof HttpResponse) {
           if (event.body.token !== null) {
-            this.jwtService.saveToken(event.body.token)
+            this.sessionStoreService.saveToken(event.body.token)
           }
         }
         return event
       }))
     } else {
 
-      const token = this.jwtService.getToken()
+      const token = this.sessionStoreService.getToken()
       if (!token) {
         return next.handle(request)
       }

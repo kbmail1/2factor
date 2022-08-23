@@ -2,7 +2,7 @@ import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { StatusMessageService } from '../statusMessage/statusMessage.service';
 import { RestClientService } from '../rest-client/rest-client.service';
-import { JwtService } from '../jwt/jwt.service';
+import { SessionStoreService } from '../../shared/session-store.service'
 
 @Injectable({ providedIn: 'root' })
 export class LoginService implements OnInit, OnDestroy {
@@ -16,7 +16,7 @@ export class LoginService implements OnInit, OnDestroy {
   constructor(
     public restClientService: RestClientService,
     public statusMessageService: StatusMessageService,
-    public jwtService: JwtService,
+    public sessionStoreService: SessionStoreService,
   ) {
     this.statusMessageSubscription = this.statusMessageService.statusMessage$
       .subscribe((msg) => {
@@ -39,13 +39,15 @@ export class LoginService implements OnInit, OnDestroy {
 
           if (data.error && data.error !== null) {
             console.log('login.service: registration failed')
-            this._isLoginSubject.next(false)
+            // registration failed.  But the existing logged in user stays as is.
+            // this._isLoginSubject.next(false)
             this.statusMessageService.setStatusMessage(`401: registration failed : ${userId}`)
           } else {
             console.log('login.service: registration successful')
-            this.jwtService.saveToken(data.accessToken)
-            this.jwtService.saveUser(userId)
-            this._isLoginSubject.next(true)
+            this.sessionStoreService.saveToken(data.token)
+            this.sessionStoreService.saveUser(userId)
+            // This is registration - not login.
+            // this._isLoginSubject.next(true)
             this.statusMessageService.setStatusMessage(`registration succeeded: ${userId}`)
           }
         },
@@ -69,10 +71,10 @@ export class LoginService implements OnInit, OnDestroy {
             this.statusMessageService.setStatusMessage(`401: login failed : ${userId}`)
           } else {
             console.log('login.service: login successful')
-            this.jwtService.saveToken(data.accessToken)
-            this.jwtService.saveUser(userId)
+            this.sessionStoreService.saveToken(data.accessToken)
+            this.sessionStoreService.saveUser(userId)
             // TODO confirm!
-            window.location.reload()
+            // window.location.reload()
             this._isLoginSubject.next(true)
             this.statusMessageService.setStatusMessage(`log succeeded: ${userId}`)
           }
@@ -88,6 +90,6 @@ export class LoginService implements OnInit, OnDestroy {
     console.log('successful logout')
     this._isLoginSubject.next(false)
     this.statusMessageService.setStatusMessage(null)
-    this.jwtService.signOut()
+    this.sessionStoreService.signOut()
   }
 }
