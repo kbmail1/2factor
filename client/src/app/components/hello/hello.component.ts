@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LoginService } from '../../services/login/login.service'
 import { Subscription } from 'rxjs';
-import { RestClientService } from 'src/app/services/rest-client/rest-client.service';
+import { SessionService } from 'src/app/shared/session.service';
 
 @Component({
   selector: 'app-hello',
@@ -15,18 +15,20 @@ export class HelloComponent implements OnInit {
   helloResponse: any
   params: any
 
+
   loginState: boolean = false
-  loginSubscription: Subscription
+  sessionSubscription: Subscription
 
   constructor(
     private _activatedRoute: ActivatedRoute,
     public loginService: LoginService,
+    public sessionService: SessionService,
   ) {
     this.helloResponse = {}
 
-    this.loginSubscription = this.loginService.loginStatus$.subscribe((status) => {
-      this.loginState = status
-      console.log('hello: status:', status)
+    this.sessionSubscription = this.sessionService.state$.subscribe((state: any) => {
+        this.loginState = this.loginService.isItLoginState(state)
+      console.log('hello.component: login state:', state)
     })
   }
 
@@ -34,9 +36,9 @@ export class HelloComponent implements OnInit {
 
     this._activatedRoute.params
       .subscribe(params => {
-        console.log(params); // { order: "popular" }
+        console.log(params);
         console.log(typeof params)
-        console.log(params['id']); // "popular"
+        console.log(params['id']);
       })
 
     console.log('HelloComponent: queryParams...')
@@ -44,10 +46,9 @@ export class HelloComponent implements OnInit {
       .subscribe((params) => {
         console.log(params)
       });
-
   }
 
   ngOnDestroy(): void {
-    this.loginSubscription.unsubscribe()
+    this.sessionSubscription.unsubscribe()
   }
 }

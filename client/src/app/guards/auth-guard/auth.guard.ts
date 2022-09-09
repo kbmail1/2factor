@@ -1,3 +1,4 @@
+import { SessionService } from 'src/app/shared/session.service';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,15 +12,19 @@ import { Router } from '@angular/router';
 export class AuthGuard implements CanActivate {
 
   loginState: boolean = false
-  loginSubscription: Subscription
 
   constructor(
     public loginService: LoginService,
     private router: Router,
+    public sessionService: SessionService
   ) {
-    this.loginSubscription = this.loginService.loginStatus$.subscribe((status) => {
-      this.loginState = status
-      console.log('auth.guard in constructor: status:', status)
+    this.sessionService.state$.subscribe((state: any) => {
+      if (this.loginService.isItLoginState(state)) {
+        this.loginState = true
+      } else {
+        this.loginState = false;
+      }
+      console.log('auth.guard in session state subscription: login state:', state)
     })
   }
 

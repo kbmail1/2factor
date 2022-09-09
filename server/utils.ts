@@ -1,23 +1,13 @@
 import * as jwt from 'jsonwebtoken'
-import { JWT } from './config'
+import { TOKEN_SECRET } from './config'
 import bcrypt from 'bcryptjs'
 import * as db from './db'
 import * as fs from 'fs'
 
-export const token_secret = JWT.TOKEN_SECRET || 'my_secret_key'
-export const jwtExpirySeconds = JWT.expires_in || '180d'
+export const token_secret = TOKEN_SECRET || 'my_secret_key'
 
-export const generateAccessToken = (payload: string | object | Buffer) => {
-    console.log('ddd', jwtExpirySeconds)
-    try {
-        return jwt.sign(payload, token_secret, {
-            algorithm: 'HS256',
-        })
-    } catch (error) {
-        console.log('error ----------')
-        console.log(error)
-       throw error
-    }
+export const generateAccessToken = (username) => {
+    return jwt.sign(username, token_secret, { expiresIn: '1800s' })
 }
 
 export const verifyJwt = (token: string) => {

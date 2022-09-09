@@ -1,3 +1,4 @@
+import { SessionService } from 'src/app/shared/session.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoginService } from '../../services/login/login.service'
 import { Subscription } from 'rxjs';
@@ -13,7 +14,8 @@ import { StatusMessageService } from 'src/app/services/statusMessage/statusMessa
 export class HeaderComponent implements OnInit {
 
   loginState: boolean = false
-  loginSubscription: Subscription
+
+  sessionSubscription: Subscription
 
   statusMessage: string | null = ''
   statusMessageSubscription: Subscription
@@ -24,22 +26,26 @@ export class HeaderComponent implements OnInit {
     public loginService: LoginService,
     public restClientService: RestClientService,
     public statusMessageService: StatusMessageService,
+    public sessionService: SessionService,
     public router: Router,
   ) {
-    this.loginSubscription = this.loginService.loginStatus$.subscribe((status) => {
-      this.loginState = status
-      console.log('header: status:', status)
+
+    this.sessionSubscription = this.sessionService.state$.subscribe((state: any) => {
+        this.loginState = this.loginService.isItLoginState(state)
+        console.log('header.component in subscription: state:', state)
+        console.log('header.component in subscription: loginState:', this.loginState)
     })
+
     this.statusMessageSubscription = this.statusMessageService.statusMessage$.subscribe((msg) => {
       this.statusMessage = msg
-      console.log('header: error:', this.statusMessage)
+
+      console.log('header: ', this.statusMessage)
     })
   }
 
   ngOnInit() { }
 
   ngOnDestroy(): void {
-    this.loginSubscription.unsubscribe()
     this.statusMessageSubscription.unsubscribe()
   }
 
@@ -48,6 +54,7 @@ export class HeaderComponent implements OnInit {
       this.helloResponse = JSON.stringify(data)
       console.log(`HeaderComponent: hello: ${this.helloResponse}`)
 
+      // This is important - do not delete (for reference)
       // this.router.navigate(['/hello/665'], { queryParams: { 'hello-api-response': this.helloResponse } });
       // this.router.navigate(['/hello'], { queryParams: { 'hello-api-response': this.helloResponse } });
     })

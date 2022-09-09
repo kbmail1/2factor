@@ -14,36 +14,36 @@ const _updateFile = () => {
   fs.writeFileSync('./users.json', JSON.stringify(users, null, 2))
 }
 
-export const getUser = (userId: string) => {
+export const getUser = (user: string) => {
   for (let index = 0; index < users.length; index++) {
     const element = users[index];
-    if (userId == element.userId) {
-      return { userId: element.userId, password: element.password }
+    if (user == element.user) {
+      return { user: element.user, password: element.password }
     }
   }
   return null
 }
 
-export const validatePassword = async (userId: string, plain_password: string) => {
-  let user = getUser(userId)
-  if (user === null) {
+export const validatePassword = async (user: string, plain_password: string) => {
+  let credentials = getUser(user)
+  if (credentials === null) {
     return false
   }
-  const result = await bcrypt.compare(plain_password, user.password)
+  const result = await bcrypt.compare(plain_password, credentials.password)
   return result
 }
 
-export const saveUser = async (userId: string, password: string) => {
+export const saveUser = async (user: string, password: string) => {
   const salt = bcrypt.genSaltSync()
   let hash_password = await bcrypt.hash(password, salt)
-  users.push({ userId, password: hash_password })
+  users.push({ user, password: hash_password })
   _updateFile()
 }
 
-export const removeUser = (userId: string) => {
+export const removeUser = (user: string) => {
   for (let index = 0; index < users.length; index++) {
     const element = users[index];
-    if (userId === element.userId) {
+    if (user === element.user) {
       users.splice(index, 1)
       _updateFile()
       return
@@ -56,7 +56,7 @@ saveUser('kavin', 'kavinpass')
 console.log('after save kavin: ', users)
 
 let x = getUser('kundan')
-console.log('after get kundan: ', x.userId)
+console.log('after get kundan: ', x.user)
 console.log('after get kundan: ', x.password)
 
 removeUser('kavin')

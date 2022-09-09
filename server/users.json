@@ -1,10 +1,10 @@
 [
   {
-    "userId": "admin",
+    "user": "admin",
     "password": "$2a$10$F4gGOVHthlbz7tcqNJsMD.yL5m.7Fza.1rYi3AltjCfAmnHP66cH6"
   },
   {
-    "userId": "kundan",
+    "user": "kundan",
     "password": "$2a$10$z45jMQTrVAPVBM3gXl6qqOGWtlpJfVJK90p8XegoJhQ5/PRmEByJW"
   }
 ]

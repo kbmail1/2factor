@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { SessionStoreService } from '../../shared/session-store.service'
+import { SessionService } from '../../shared/session.service'
 
 const endpoint = 'http://localhost:4201/'
 
@@ -10,13 +10,13 @@ const endpoint = 'http://localhost:4201/'
   providedIn: 'root'
 })
 export class RestClientService {
-static LOGIN = 'login'
-static HELLO = 'hello'
-static REGISTER = 'register'
+static LOGIN = 'api/v1/login'
+static HELLO = 'api/v1/hello'
+static REGISTER = 'api/v1/register'
 
   constructor(
     private http: HttpClient,
-    public sessionStoreService: SessionStoreService
+    public sessionService: SessionService
   ) { }
 
   hello(): Observable<any> {
@@ -34,7 +34,7 @@ static REGISTER = 'register'
   register(credentials: any): Observable<any> {
     let url = endpoint + RestClientService.REGISTER
     const body = {
-      'userId': credentials['userId'],
+      'user': credentials['user'],
       'password': credentials['password']
     }
     const headers = new HttpHeaders({
@@ -45,11 +45,11 @@ static REGISTER = 'register'
       'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Max-Age': '86400',
-      // 'Authorization': 'Basic ' + btoa(credentials['userId'] + ':' + credentials['password'])
+      // 'Authorization': 'Basic ' + btoa(credentials['user'] + ':' + credentials['password'])
     })
     let options = { headers: headers }
 
-    // let queryParams = new HttpParams().set('userId', credentials['userId']).set('password', credentials['password'])
+    // let queryParams = new HttpParams().set('user', credentials['user']).set('password', credentials['password'])
     console.log('restClientService: register: invoking post.')
     return this.http
       .post(url, body, options)
@@ -65,11 +65,11 @@ static REGISTER = 'register'
   }
 
 
-  login(credentials: any): Observable<any> {
+  basicAuth(credentials: any): Observable<any> {
     let url = endpoint + RestClientService.LOGIN
     const body = {
-      'userId': credentials['userId'],
-      'password': credentials['password']
+      user: credentials['user'],
+      password: credentials['password']
     }
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -79,11 +79,11 @@ static REGISTER = 'register'
       'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
       'Access-Control-Allow-Credentials': 'true',
       'Access-Control-Max-Age': '86400',
-      'Authorization': 'Basic ' + btoa(credentials['userId'] + ':' + credentials['password'])
+      'Authorization': 'Basic ' + btoa(credentials['user'] + ':' + credentials['password'])
     })
     let options = { headers: headers }
 
-    // let queryParams = new HttpParams().set('userId', credentials['userId']).set('password', credentials['password'])
+    // let queryParams = new HttpParams().set('user', credentials['user']).set('password', credentials['password'])
     console.log('restClientService: login: invoking post.')
     return this.http
       .post(url, body, options)

@@ -2,94 +2,85 @@ import { Injectable, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { StatusMessageService } from '../statusMessage/statusMessage.service';
 import { RestClientService } from '../rest-client/rest-client.service';
-import { SessionStoreService } from '../../shared/session-store.service'
+import { SessionService } from '../../shared/session.service'
 
 @Injectable({ providedIn: 'root' })
 export class LoginService implements OnInit, OnDestroy {
 
-  private _isLoginSubject = new BehaviorSubject<boolean>(false);
-  readonly loginStatus$ = this._isLoginSubject.asObservable();
-
-  private statusMessageSubscription: Subscription
-  private statusMessage: string | null = null
+  /*
+   * TODO: login.service does not need status behavior subject right now.
+   * once status starts storing more data (other than user and token), login
+   * service may need it make login decisions.
+   */
 
   constructor(
     public restClientService: RestClientService,
     public statusMessageService: StatusMessageService,
-    public sessionStoreService: SessionStoreService,
-  ) {
-    this.statusMessageSubscription = this.statusMessageService.statusMessage$
-      .subscribe((msg) => {
-        this.statusMessage = msg;
-      })
-  }
+    public sessionService: SessionService,
+  ) { }
 
   ngOnInit() { }
 
-  ngOnDestroy() {
-    this.statusMessageSubscription.unsubscribe();
-  }
+  ngOnDestroy() { }
 
-  register(userId: string, password: string): void {
-
-    this.restClientService.register({ userId, password }).subscribe(
+  register(user: string, password: string): void {
+    this.restClientService.register({ user, password }).subscribe(
       {
+        // remember: register success or failure is not a login success or failure
         next: (data) => {
-          console.log('login.service: registration: received from ReST: ', JSON.stringify(data))
+          console.log('login.service: register: received from ReST: ', JSON.stringify(data))
 
           if (data.error && data.error !== null) {
-            console.log('login.service: registration failed')
-            // registration failed.  But the existing logged in user stays as is.
-            // this._isLoginSubject.next(false)
-            this.statusMessageService.setStatusMessage(`401: registration failed : ${userId}`)
+            console.log('login.service: register failed')
+            this.statusMessageService.setStatusMessage(`401: registration failed : ${user}`)
           } else {
-            console.log('login.service: registration successful')
-            this.sessionStoreService.saveToken(data.token)
-            this.sessionStoreService.saveUser(userId)
-            // This is registration - not login.
-            // this._isLoginSubject.next(true)
-            this.statusMessageService.setStatusMessage(`registration succeeded: ${userId}`)
+            console.log('login.service: register successful')
+            this.statusMessageService.setStatusMessage(`register succeeded: ${user}`)
           }
         },
         error: (e) => {
-          this._isLoginSubject.next(false)
-          this.statusMessageService.setStatusMessage(`500: registration failed: ${userId}`)
+          this.statusMessageService.setStatusMessage(`500: registration failed: ${user}`)
         }
       })
   }
 
-  login(userId: string, password: string): void {
+  basicAuth(user: string, password: string): void {
 
-    this.restClientService.login({ userId, password }).subscribe(
+    this.restClientService.basicAuth({ user, password }).subscribe(
       {
         next: (data) => {
           console.log('login.service: login: received from ReST: ', JSON.stringify(data))
 
           if (data.error && data.error !== null) {
-            console.log('login.service: login failed')
-            this._isLoginSubject.next(false)
-            this.statusMessageService.setStatusMessage(`401: login failed : ${userId}`)
+            console.log(`bug: TODO: do this with unit-test -': login.service: login failed `)
+            this.sessionService.clearState() // flush all; user/session logged out
+            this.statusMessageService.setStatusMessage(`401: login failed : ${user}`)
           } else {
-            console.log('login.service: login successful')
-            this.sessionStoreService.saveToken(data.accessToken)
-            this.sessionStoreService.saveUser(userId)
-            // TODO confirm!
+            console.log(`login.service: login successful: data: ${JSON.stringify(data)}`)
+            this.sessionService.updateState({ user, token: data})
+            // TODO need below line? confirm...
             // window.location.reload()
-            this._isLoginSubject.next(true)
-            this.statusMessageService.setStatusMessage(`log succeeded: ${userId}`)
+
+            this.statusMessageService.setStatusMessage(`log succeeded: ${user}`)
           }
         },
         error: (e) => {
-          this._isLoginSubject.next(false)
-          this.statusMessageService.setStatusMessage(`500: login failed: ${userId}`)
+            this.sessionService.clearState() // flush all; user/session logged out
+          this.statusMessageService.setStatusMessage(`500: login failed: ${user}`)
         }
       })
   }
 
   logout() {
-    console.log('successful logout')
-    this._isLoginSubject.next(false)
+    this.sessionService.clearState()
     this.statusMessageService.setStatusMessage(null)
-    this.sessionStoreService.signOut()
+    console.log('successful logout')
+  }
+
+  isItLoginState(state: any): boolean {
+    if (state && state.hasOwnProperty('user') && state.user && state.hasOwnProperty('token') && state.token) {
+      return true
+    }
+    return false
   }
 }

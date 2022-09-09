@@ -2,7 +2,7 @@
   <li><a [routerLink]="['/home']">Home</a></li>
 
   <!--<li *ngIf="!(this.loginService.loginStatus$ | async)" (click)="loginService.login()">Login</li>-->
-  <li *ngIf="(this.loginService.loginStatus$ | async)" (click)="loginService.logout()">Logout</li>
+  <li *ngIf="(this.loginState)" (click)="loginService.logout()">Logout</li>
 
   <li (click)="this.handleHello()">Hello</li>
   <li class="header-app-state" *ngIf="this.helloResponse"> [hello: {{ this.helloResponse }} ]</li>
@@ -12,7 +12,7 @@
         &&
       (this.statusMessageService.statusMessage$ | async) !== ''
     " class="header-app-state">
-    [{{ this.statusMessage }} ]
+    status-message: [{{ this.statusMessage }} ]
   </li>
 
 </ul>

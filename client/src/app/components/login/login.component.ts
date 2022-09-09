@@ -13,7 +13,7 @@ import { RestClientService } from '../../services/rest-client/rest-client.servic
 export class LoginComponent implements OnInit {
 
   loginForm = this.fb.group({
-    userId: ['', [Validators.required]],
+    user: ['', [Validators.required]],
     password: ['', [Validators.required]],
   })
 
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     console.log('login.component:onSubmit...')
     console.log('login.component: ', this.loginForm.value)
-    this.loginService.login(this.loginForm.value.userId, this.loginForm.value.password)
+    this.loginService.basicAuth(this.loginForm.value.user, this.loginForm.value.password)
   }
 
   onRegister(event: any) {
@@ -38,6 +38,6 @@ export class LoginComponent implements OnInit {
     console.log(typeof event)
     console.log('login.component:onRegister...')
     console.log('login.component: onRegister', this.loginForm.value)
-    this.loginService.register(this.loginForm.value.userId, this.loginForm.value.password)
+    this.loginService.register(this.loginForm.value.user, this.loginForm.value.password)
   }
 }

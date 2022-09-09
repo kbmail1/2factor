@@ -1,7 +1,7 @@
-<div *ngIf="!(this.loginService.loginStatus$ | async)">
+<div *ngIf="!this.loginState">
   <app-login></app-login>
 </div>
-<div style="margin-left:10px;width:30rem" *ngIf="(this.loginService.loginStatus$ | async)">
+<div style="margin-left:10px;width:30rem" *ngIf="this.loginState">
   <h3 class="text-center">Welcome to 2Factor</h3>
 
   Ths site uses Angular and Node. Login uses JWT followed by Cellphone auth.

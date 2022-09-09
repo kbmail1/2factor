@@ -4,7 +4,7 @@ import { RestClientService } from '../../services/rest-client/rest-client.servic
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LoginService } from 'src/app/services/login/login.service';
-
+import { SessionService } from 'src/app/shared/session.service';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +14,7 @@ import { LoginService } from 'src/app/services/login/login.service';
 export class HomeComponent implements OnInit {
 
   loginState: boolean = false
-  loginSubscription: Subscription
+  sessionSubscription: Subscription
 
   helloResponse: any
 
@@ -22,11 +22,12 @@ export class HomeComponent implements OnInit {
     public restClientService: RestClientService,
     private router: Router,
     public loginService: LoginService,
+    public sessionService: SessionService,
 
   ) {
-
-    this.loginSubscription = this.loginService.loginStatus$.subscribe((state) => {
-      this.loginState = state
+    this.sessionSubscription = this.sessionService.state$.subscribe((state) => {
+      this.loginState = this.loginService.isItLoginState(state)
+      console.log('home.component: login state:', state)
     })
 
     this.helloResponse = {}
@@ -34,16 +35,4 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  handleHello(): void {
-    this.restClientService.hello().subscribe((data) => {
-      this.helloResponse = JSON.stringify(data)
-      console.log(`HomeComponent: hello: ${this.helloResponse}`)
-
-      // * THIS IS IMPORTANT - DO NOT DELETE
-      // this.router.navigate(['/hello/665'], { queryParams: { 'hello-api-response': this.helloResponse } });
-      // this.router.navigate(['/hello'], { queryParams: { 'hello-api-response': this.helloResponse } });
-    })
-  }
-
 }

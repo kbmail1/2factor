@@ -4,7 +4,7 @@
 const users = require('./users')
 import * as utils from './utils'
 import * as jwt from 'jsonwebtoken'
-import { JWT } from './config'
+import { TOKEN_SECRET } from './config'
 import * as db from './db'
 
 const express = require('express')
@@ -25,7 +25,7 @@ const authenticateJWT = (req, res, next) => {
   if (authHeader) {
     const token = authHeader.split(' ')[1];
 
-    jwt.verify(token, JWT.TOKEN_SECRET, (err: any, user: any) => {
+    jwt.verify(token, TOKEN_SECRET, (err: any, user: any) => {
       if (err) {
         return res.sendStatus(403);
       }
@@ -37,76 +37,64 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.get('/hello', (req, res) => {
+app.get('/api/v1/hello', (req, res) => {
   res.status(200).send({ express: 'Hello From Express' })
 });
 
-app.post('/login', async (req, res) => {
+app.post('/api/v1/login', async (req, res) => {
   // console.log('login: req.body', req.body);
-  const req_userId = req.body.userId.toLowerCase()
+  const req_user = req.body.user.toLowerCase()
   const req_password = req.body.password.toLowerCase()
 
-  if (db.getUser(req_userId) !== null) {
+  if (db.getUser(req_user) !== null) {
     // user found.
-    const _user = db.getUser(req_userId)
-    const db_userId = _user.userId
+    const _user = db.getUser(req_user)
+    const db_user = _user.user
     const db_password = _user.password
 
-    console.log(`login: validating password(${req_userId} ${req_password})`)
-    let valid: boolean = await db.validatePassword(db_userId, req_password)
+    console.log(`login: validating password(${req_user} ${req_password})`)
+    let valid: boolean = await db.validatePassword(db_user, req_password)
     if (!valid) {
       res.status(200).send({ error: 'auth failed' }).end()
       return
     }
-    let token = null
-    try {
-      token = utils.generateAccessToken(db_userId)
-    } catch (error) {
-      res.status(401).send({ error: `${error} generateAccessToken(${db_userId} failed` }).end()
-      return
-    }
-    res.status(200).send({
-      token,
-      message: 'Login Successful',
-      db_userId,
-      password: req_password,
-      hash: db_password,
-      error: null,
-    })
-    return
+
+    const token = utils.generateAccessToken({ user: db_user })
+    return res.status(200).json(token).end()
   }
+
   console.log('login failed')
-  res.status(200).send({ error: 'userId/password not found' }).end()
+  res.status(200).send({ error: 'user/password not found' }).end()
   return
 });
 
-app.post('/register', async (req, res) => {
+app.post('/api/v1/register', async (req, res) => {
   console.log('register: req.body', req.body);
-  const req_userId = req.body.userId.toLowerCase()
+  const req_user = req.body.user.toLowerCase()
   const req_password = req.body.password.toLowerCase()
 
-  let tmp_user = await db.getUser(req_userId)
+  let tmp_user = await db.getUser(req_user)
   if (tmp_user !== null) {
-    console.log('user ', req_userId, ' already exists')
+    console.log('user ', req_user, ' already exists')
     res.status(200).send({
       message: 'user already exists',
-      userId: req_userId,
+      user: req_user,
       error: 'user exists',
     }).end()
     return
   }
 
   console.log('user-id is unique... registering')
-  await db.saveUser(req_userId, req_password)
+  await db.saveUser(req_user, req_password)
   res.status(201).send(
     {
-      message: `user ${req_userId} registered`,
-      userId: req_userId,
+      message: `user ${req_user} registered`,
+      user: req_user,
       error: null
     })
 });
 
-app.get('/secure-hello', authenticateJWT, (req, res) => {
+app.get('/api/v1/secure-hello', authenticateJWT, (req, res) => {
   const authHeader = req.headers.authorization
 
   if (!authHeader) {
@@ -117,7 +105,7 @@ app.get('/secure-hello', authenticateJWT, (req, res) => {
 
   const token = authHeader.split(' ')[1]
   try {
-    jwt.verify(token, JWT.TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, TOKEN_SECRET, (err, user) => {
       if (err) {
         return res.status(403).send(
           {
