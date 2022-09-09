@@ -1,5 +1,5 @@
 import { SessionService } from 'src/app/shared/session.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { LoginService } from '../../services/login/login.service'
 import { Subscription } from 'rxjs';
 import { RestClientService } from 'src/app/services/rest-client/rest-client.service';
@@ -11,14 +11,13 @@ import { StatusMessageService } from 'src/app/services/statusMessage/statusMessa
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent {
 
   loginState: boolean = false
 
   sessionSubscription: Subscription
 
-  statusMessage: string | null = ''
-  statusMessageSubscription: Subscription
+  @Input() statusMessage: string = ''
 
   helloResponse: String | null = null
 
@@ -35,18 +34,6 @@ export class HeaderComponent implements OnInit {
         console.log('header.component in subscription: state:', state)
         console.log('header.component in subscription: loginState:', this.loginState)
     })
-
-    this.statusMessageSubscription = this.statusMessageService.statusMessage$.subscribe((msg) => {
-      this.statusMessage = msg
-
-      console.log('header: ', this.statusMessage)
-    })
-  }
-
-  ngOnInit() { }
-
-  ngOnDestroy(): void {
-    this.statusMessageSubscription.unsubscribe()
   }
 
   handleHello(): void {

@@ -8,11 +8,11 @@
   <li class="header-app-state" *ngIf="this.helloResponse"> [hello: {{ this.helloResponse }} ]</li>
   <li class="header-app-state"> [login: {{ this.loginState }} ]</li>
   <li *ngIf="
-      (this.statusMessageService.statusMessage$ | async) !== null
+      (this.statusMessage) !== null
         &&
-      (this.statusMessageService.statusMessage$ | async) !== ''
+      (this.statusMessage) !== ''
     " class="header-app-state">
-    status-message: [{{ this.statusMessage }} ]
+    statusMessage: [{{ this.statusMessage }} ]
   </li>
 
 </ul>
